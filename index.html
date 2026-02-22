@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pipe to Sheet Converter</title>
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0c0c0e">
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+body{
+  background:#0c0c0e;
+  color:#f5f5f7;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  min-height:100vh;
+}
+
+.wrapper{
+  width:95%;
+  max-width:800px;
+}
+
+.card{
+  background:#111113;
+  border-radius:20px;
+  padding:30px;
+  border:1px solid #1d1d22;
+  box-shadow:0 20px 50px rgba(0,0,0,0.7);
+}
+
+h1{
+  font-size:20px;
+  font-weight:600;
+  margin-bottom:25px;
+  color:#ffffff;
+}
+
+label{
+  font-size:13px;
+  opacity:0.6;
+  margin-bottom:8px;
+  display:block;
+}
+
+textarea{
+  width:100%;
+  height:140px;
+  background:#0f0f12;
+  border:1px solid #1f1f25;
+  border-radius:14px;
+  padding:15px;
+  color:#f5f5f7;
+  font-size:14px;
+  resize:none;
+  outline:none;
+  margin-bottom:20px;
+}
+
+textarea:focus{
+  border:1px solid #2a2a30;
+}
+
+.buttons{
+  display:flex;
+  gap:12px;
+}
+
+button{
+  flex:1;
+  padding:13px;
+  border-radius:12px;
+  border:none;
+  font-weight:500;
+  font-size:14px;
+  cursor:pointer;
+  transition:0.2s ease;
+}
+
+.primary{
+  background:#ffffff;
+  color:#000;
+}
+
+.secondary{
+  background:#1c1c22;
+  color:#fff;
+  border:1px solid #2a2a30;
+}
+
+button:active{
+  transform:scale(0.97);
+}
+
+.footer{
+  text-align:center;
+  font-size:12px;
+  opacity:0.35;
+  margin-top:18px;
+}
+</style>
+</head>
+<body>
+
+<div class="wrapper">
+  <div class="card">
+    <h1>Sheet Converter</h1>
+
+    <label>Input</label>
+    <textarea id="inputBox" placeholder="Paste or type here..."></textarea>
+
+    <label>Output</label>
+    <textarea id="outputBox" placeholder="Converted data will appear here"></textarea>
+
+    <div class="buttons">
+      <button class="primary" id="copyBtn" onclick="copyOutput()">Copy Output</button>
+      <button class="secondary" onclick="clearAll()">Clear All</button>
+    </div>
+
+    <div class="footer">
+      ©𝟸𝟶𝟸𝟼 𝙹𝙰𝙲𝙺 𝙱𝙷𝙰𝙸 𝙰𝙻𝙻 𝚁𝙸𝙶𝙷𝚃𝚂 𝚁𝙴𝚂𝙴𝚁𝚅𝙴𝙳
+    </div>
+
+  </div>
+</div>
+
+<script>
+const inputBox = document.getElementById("inputBox");
+const outputBox = document.getElementById("outputBox");
+const copyBtn = document.getElementById("copyBtn");
+
+inputBox.addEventListener("input", convertText);
+
+function convertText(){
+  let input = inputBox.value.trim();
+  if(!input){
+    outputBox.value = "";
+    return;
+  }
+
+  let lines = input.split(/\r?\n/);
+  let result = lines.map(line => 
+    line.split("|").map(p => p.trim()).join("\t")
+  ).join("\n");
+
+  outputBox.value = result;
+}
+
+async function copyOutput(){
+  if(!outputBox.value) return;
+
+  await navigator.clipboard.writeText(outputBox.value);
+
+  copyBtn.textContent = "Copied ✓";
+  setTimeout(() => {
+    copyBtn.textContent = "Copy Output";
+  }, 1500);
+}
+
+function clearAll(){
+  inputBox.value = "";
+  outputBox.value = "";
+}
+
+// Service Worker Register
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js');
+  });
+}
+</script>
+
+</body>
+</html>
